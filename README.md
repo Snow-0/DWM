@@ -4,6 +4,7 @@ dwm is an extremely fast, small, and dynamic window manager for X.
 
 Screenshots
 -----------
+![screenhost](https://user-images.githubusercontent.com/69723902/115807383-883ce680-a3b6-11eb-8014-538efec6d767.png)
 
 
 Patches
@@ -59,8 +60,10 @@ and (re)compiling the source code with:
     
 Libraries 
 ---------
-Swallow needs the libx11 library
+Swallow needs the the follow dependencies:
++ libxcb
++ Xlib-libxcb
++ xcb-res
 
-    sudo pacman -S libx11 
 
    
