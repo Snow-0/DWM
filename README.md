@@ -60,7 +60,7 @@ and (re)compiling the source code with:
     
 Libraries 
 ---------
-Swallow needs the the follow dependencies:
+Swallow needs the the following dependencies:
 + libxcb
 + Xlib-libxcb
 + xcb-res
