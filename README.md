@@ -9,12 +9,11 @@ Screenshots
 
 Patches
 -------
-+ dwmblocks patch
++ clickable dwmblocks
 + statuscmd
 + systray
 + attach aside 
 + attach below 
-+ autostart
 + center
 + bar height
 + vanity gaps
@@ -60,7 +59,7 @@ and (re)compiling the source code with:
     
 Libraries 
 ---------
-Swallow needs the the following dependencies:
+Swallow needs the following dependencies:
 + libxcb
 + Xlib-libxcb
 + xcb-res
