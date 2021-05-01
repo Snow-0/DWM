@@ -12,7 +12,6 @@
 
 /* Other patches */
 #include "attachx.h"
-#include "autostart.h"
 #include "cyclelayouts.h"
 #include "movestack.h"
 #include "pertag.h"

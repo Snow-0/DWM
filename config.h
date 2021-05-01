@@ -10,10 +10,6 @@ static const unsigned int gappiv         = 20;  /* vert inner gap between window
 static const unsigned int gappoh         = 20;  /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov         = 20;  /* vert outer gap between windows and screen edge */
 static const int smartgaps_fact          = 1;   /* gap factor when there is only one client; 0 = no gaps, 3 = 3x outer gaps */
-static const char autostartblocksh[]     = "autostart_blocking.sh";
-static const char autostartsh[]          = "autostart.sh";
-static const char dwmdir[]               = "dwm2";
-static const char localshare[]           = "/home/max/";
 static const int showbar                 = 1;   /* 0 means no bar */
 static const int topbar                  = 1;   /* 0 means bottom bar */
 static const int bar_height              = 22;   /* 0 means derive from font, >= 1 explicit height */
@@ -60,6 +56,8 @@ static char urgfgcolor[]                 = "#D8DEE9";
 static char urgbgcolor[]                 = "#3b4252";
 static char urgbordercolor[]             = "#3b4252";
 static char urgfloatcolor[]              = "#4c566a";
+
+
 
 
 
@@ -112,6 +110,8 @@ static Sp scratchpads[] = {
  */
 static char *tagicons[][NUMTAGS] = {
 	[DEFAULT_TAGS]        = { "1", "2", "3", "4", "5", "6", "7", "8", "9" },
+	[ALTERNATIVE_TAGS]    = { "A", "B", "C", "D", "E", "F", "G", "H", "I" },
+	[ALT_TAGS_DECORATION] = { "<1>", "<2>", "<3>", "<4>", "<5>", "<6>", "<7>", "<8>", "<9>" },
 };
 
 
@@ -140,9 +140,13 @@ static const Rule rules[] = {
 	 *	WM_WINDOW_ROLE(STRING) = role
 	 *	_NET_WM_WINDOW_TYPE(ATOM) = wintype
 	 */
-	/* class     instance     title  wintype         tags mask   isfloating  isterminal  noswallow  monitor */
-	{ "Alacritty", NULL,       NULL,        	 0,           0,         1,          0,         -1 },
-	{ "discord",   NULL,	   NULL,  NULL, 	 1<<4,	      0,	 0,	     0,	        -1 },
+	RULE(.wintype = WTYPE "DIALOG", .isfloating = 1)
+	RULE(.wintype = WTYPE "UTILITY", .isfloating = 1)
+	RULE(.wintype = WTYPE "TOOLBAR", .isfloating = 1)
+	RULE(.wintype = WTYPE "SPLASH", .isfloating = 1)
+	RULE(.class = "Gimp", .tags = 1 << 4)
+	RULE(.class = "Firefox", .tags = 1 << 7)
+	RULE(.instance = "spterm", .tags = SPTAG(0), .isfloating = 1)
 };
 
 
@@ -326,5 +330,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,              Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,              Button3,        toggletag,      {0} },
 };
-
-

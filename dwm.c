@@ -59,8 +59,7 @@
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define ISVISIBLEONTAG(C, T)    ((C->tags & T))
-#define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
+#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -196,7 +195,6 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-	int iscentered;
 	int isterminal, noswallow;
 	pid_t pid;
 	int issteam;
@@ -253,7 +251,6 @@ typedef struct {
 	const char *title;
 	const char *wintype;
 	unsigned int tags;
-	int iscentered;
 	int isfloating;
 	int isterminal;
 	int noswallow;
@@ -264,7 +261,7 @@ typedef struct {
 
 /* Cross patch compatibility rule macro helper macros */
 #define FLOATING , .isfloating = 1
-#define CENTERED , .iscentered = 1
+#define CENTERED
 #define PERMANENT
 #define FAKEFULLSCREEN
 #define NOSWALLOW , .noswallow = 1
@@ -448,7 +445,6 @@ applyrules(Client *c)
 		&& (!r->instance || strstr(instance, r->instance))
 		&& (!r->wintype || wintype == XInternAtom(dpy, r->wintype, False)))
 		{
-			c->iscentered = r->iscentered;
 			c->isterminal = r->isterminal;
 			c->noswallow = r->noswallow;
 			c->isfloating = r->isfloating;
@@ -664,6 +660,8 @@ cleanup(void)
 	while (mons)
 		cleanupmon(mons);
 	if (showsystray && systray) {
+		while (systray->icons)
+			removesystrayicon(systray->icons);
 		if (systray->win) {
 			XUnmapWindow(dpy, systray->win);
 			XDestroyWindow(dpy, systray->win);
@@ -705,6 +703,7 @@ cleanupmon(Monitor *mon)
 			systray->bar = NULL;
 		free(bar);
 	}
+	free(mon->pertag);
 	free(mon);
 }
 
@@ -715,6 +714,7 @@ clientmessage(XEvent *e)
 	XSetWindowAttributes swa;
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
+	unsigned int i;
 
 	if (showsystray && systray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
 		/* add systray icons */
@@ -766,8 +766,20 @@ clientmessage(XEvent *e)
 			)));
 		}
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
-		if (c != selmon->sel && !c->isurgent)
-			seturgent(c, 1);
+		if (c->tags & c->mon->tagset[c->mon->seltags])
+			focus(c);
+		else {
+			for (i = 0; i < NUMTAGS && !((1 << i) & c->tags); i++);
+			if (i < NUMTAGS) {
+				if (c != selmon->sel)
+					unfocus(selmon->sel, 0, NULL);
+				selmon = c->mon;
+				if (((1 << i) & TAGMASK) != selmon->tagset[selmon->seltags])
+					view(&((Arg) { .ui = 1 << i }));
+				focus(c);
+				restack(selmon);
+			}
+		}
 	}
 }
 
@@ -907,6 +919,7 @@ createmon(void)
 			n = MAX(br->bar, n);
 	}
 
+	m->bar = NULL;
 	for (i = 0; i <= n && i < max_bars; i++) {
 		bar = ecalloc(1, sizeof(Bar));
 		bar->mon = m;
@@ -1443,12 +1456,8 @@ manage(Window w, XWindowAttributes *wa)
 		c->mon = t->mon;
 		c->tags = t->tags;
 		c->bw = borderpx;
-		if (c->x == c->mon->wx && c->y == c->mon->wy)
-			c->iscentered = 1;
 	} else {
 		c->mon = selmon;
-		if (c->x == c->mon->wx && c->y == c->mon->wy)
-			c->iscentered = 1;
 		c->bw = borderpx;
 		applyrules(c);
 		term = termforwin(c);
@@ -1462,7 +1471,7 @@ manage(Window w, XWindowAttributes *wa)
 		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
 	c->x = MAX(c->x, c->mon->mx);
 	/* only fix client y-offset, if the client center might cover the bar */
-	c->y = MAX(c->y, ((c->mon->bar->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
+	c->y = MAX(c->y, ((!c->mon->bar || c->mon->bar->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 
 	wc.border_width = c->bw;
@@ -1476,13 +1485,11 @@ manage(Window w, XWindowAttributes *wa)
 	if (getatomprop(c, netatom[NetWMState]) == netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
 	updatewmhints(c);
-	if (c->iscentered) {
-		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
-		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
-	}
 
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
 	grabbuttons(c, 0);
+	c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+  c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 
 	if (!c->isfloating)
 		c->isfloating = c->oldstate = trans != None || c->isfixed;
@@ -1805,7 +1812,7 @@ restack(Monitor *m)
 		return;
 	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
 		XRaiseWindow(dpy, m->sel->win);
-	if (m->lt[m->sellt]->arrange) {
+	if (m->lt[m->sellt]->arrange && m->bar) {
 		wc.stack_mode = Below;
 		wc.sibling = m->bar->win;
 		for (c = m->stack; c; c = c->snext)
@@ -2381,9 +2388,8 @@ updatebarpos(Monitor *m)
 		if (bar->topbar)
 			m->wy = m->wy + bar->bh + y_pad;
 		m->wh -= y_pad + bar->bh;
-	}
-	for (bar = m->bar; bar; bar = bar->next)
 		bar->by = (bar->topbar ? m->wy - bar->bh : m->wy + m->wh);
+	}
 }
 
 void
@@ -2712,7 +2718,6 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
-	runautostart();
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
