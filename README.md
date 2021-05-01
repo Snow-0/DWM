@@ -9,7 +9,6 @@ Screenshots
 
 Patches
 -------
-+ clickable dwmblocks
 + statuscmd
 + systray
 + attach below 
