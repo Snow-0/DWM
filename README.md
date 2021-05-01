@@ -65,5 +65,5 @@ Swallow needs the following dependencies:
 
 How I applied my patches
 ------------------------
-I used ![dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) since I was running issues with the some of my patches. 
+I used ![dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) because I was running into issues with the some of the patches.
    
