@@ -12,7 +12,6 @@ Patches
 + clickable dwmblocks
 + statuscmd
 + systray
-+ attach aside 
 + attach below 
 + center
 + bar height
@@ -64,5 +63,7 @@ Swallow needs the following dependencies:
 + Xlib-libxcb
 + xcb-res
 
-
+How I applied my patches
+------------------------
+I used ![dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) since I was running issues with the some of my patches. 
    
