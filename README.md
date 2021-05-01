@@ -24,6 +24,7 @@ Patches
 + steam patch 
 + cycle layouts
 + movestack
++ alwayscenter
 
 Requirements
 ------------
