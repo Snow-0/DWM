@@ -12,8 +12,8 @@ draw_status(Bar *bar, BarArg *a)
 }
 
 
-int
-click_status(Bar *bar, Arg *arg, BarArg *a)
-{
-	return ClkStatusText;
-}
+//int
+//click_status(Bar *bar, Arg *arg, BarArg *a)
+//{
+//	return ClkStatusText;
+//}
