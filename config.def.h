@@ -139,8 +139,9 @@ static const Rule rules[] = {
 	 *	_NET_WM_WINDOW_TYPE(ATOM) = wintype
 	 */
 	/* class     instance     title  wintype   tags mask   isfloating    noswallow     isterminal  monitor */
-	{ "Alacritty", NULL,       NULL, NULL,          0,           0,         1,          1,         -1 },
-  { "discord",   NULL,       NULL, NULL,           1<<4,        0,        0,          0,         -1 },
+	{ "Alacritty", NULL,       NULL, NULL,          0,           0,        1,          1,         -1 },
+  { "discord",   NULL,       NULL, NULL,          1<<4,        0,        0,          0,         -1 },
+	{ "Virt-manager", NULL, 		 NULL, NULL,					1<<5,				 0,				 0, 				 0,					-1 },
 };
 
 
