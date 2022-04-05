@@ -13,13 +13,13 @@ static const int smartgaps_fact          = 1;   /* gap factor when there is only
 static const int showbar                 = 1;   /* 0 means no bar */
 static const int topbar                  = 1;   /* 0 means bottom bar */
 static const int bar_height              = 22;   /* 0 means derive from font, >= 1 explicit height */
-static const unsigned int systrayspacing = 2;   /* systray spacing */
+static const unsigned int systrayspacing = 3;   /* systray spacing */
 static const int showsystray             = 1;   /* 0 means no systray */
 /* Indicators: see patch/bar_indicators.h for options */
 static int tagindicatortype              = INDICATOR_TOP_LEFT_SQUARE;
 static int tiledindicatortype            = INDICATOR_NONE;
 static int floatindicatortype            = INDICATOR_TOP_LEFT_SQUARE;
-static const char *fonts[]          = { "Product Sans:size=11","JetBrains Mono Nerd Font:pixelsize=15" };
+static const char *fonts[]          = { "Product Sans:size=13","Hack Nerd Font:pixelsize=14" };
 static const char dmenufont[]       = {"monospace:size=11"};
 
 static char normfgcolor[]                = "#D8DEE9";
@@ -140,8 +140,8 @@ static const Rule rules[] = {
 	 */
 	/* class     instance     title  wintype   tags mask   isfloating    noswallow     isterminal  monitor */
 	{ "Alacritty", NULL,       NULL, NULL,          0,           0,        1,          1,         -1 },
-  { "discord",   NULL,       NULL, NULL,          1<<4,        0,        0,          0,         -1 },
-	{ "Virt-manager", NULL, 		 NULL, NULL,					1<<5,				 0,				 0, 				 0,					-1 },
+	{ "Tk", 		NULL, 	   NULL, NULL,	 		0, 			1, 			0, 		   0, 		  -1},
+	{ "Anki",		NULL,				NULL,			NULL,				0,					1,		0,		0, -1 },
 };
 
 
@@ -212,9 +212,10 @@ static const char *dmenucmd[] = {
 /* programs */
 static const char *rofi[] = { "rofi", "-show", "drun", "-modi", "drun", "-display-drun", "", NULL };
 static const char *termcmd[]  = { "alacritty", NULL };
-static const char *browser[]  = { "firefox", NULL };
+static const char *browser[]  = { "librewolf", NULL };
 static const char *pavu[]     = { "pavucontrol", NULL };
-static const char *fm[]       = { "nautilus", NULL }; 
+static const char *fm[]       = { "pcmanfm", NULL }; 
+static const char *mus[]      = { "/home/max/.config/Rofi-Beats/./rofi-beats", NULL }; 
 
 
 static const char *suspend[]    = { "systemctl", "suspend", NULL };
@@ -231,22 +232,24 @@ static const char *tty[] = { "pkill", "-KILL", "-u", "max", NULL };
 static Key keys[] = {
 	/* modifier                     key            function                argument */
 	// open programs
-  { MODKEY,                   	XK_d,          spawn,         	       {.v = rofi    } },
-	{ MODKEY,                       XK_Return,     spawn,          	       {.v = termcmd } },
-	{ MODKEY,                    	XK_f,          spawn,       	       {.v = browser } },
-	{ MODKEY|ShiftMask,             XK_p,          spawn,                  {.v = pavu    } },
-	{ MODKEY, 			XK_q,	       spawn, 		       {.v = fm      } },
+	{ MODKEY,                   		XK_d,          spawn,         	       {.v = rofi    } },
+	{ MODKEY,                    		XK_Return,     spawn,          	       {.v = termcmd } },
+	{ MODKEY,                    		XK_f,          spawn,       	       	 {.v = browser } },
+	{ MODKEY|ShiftMask,          	 	XK_p,          spawn,                  {.v = pavu    } },
+	{ MODKEY, 											XK_q,	         spawn, 		       			 {.v = fm      } },
+	{ MODKEY,												XK_s, 	       spawn,		       				 {.v = mus     } }, 
 	// enter into tty
-        { MODKEY|ShiftMask,         	XK_e,          spawn,                  {.v = tty} },
+    { MODKEY|ShiftMask,         	XK_e,          spawn,                  {.v = tty} },
 	// Audio controls
-	{ MODKEY,			XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 5; kill -44 $(pidof dwmblocks)") },
-	{ MODKEY|ShiftMask,		XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 15; kill -44 $(pidof dwmblocks)") },
-	{ MODKEY,			XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 5; kill -44 $(pidof dwmblocks)") },
-	{ MODKEY|ShiftMask,		XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 15; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY,												XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 5; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY|ShiftMask,							XK_minus,	spawn,		SHCMD("pamixer --allow-boost -d 15; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY,												XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 5; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY|ShiftMask,							XK_equal,	spawn,		SHCMD("pamixer --allow-boost -i 15; kill -44 $(pidof dwmblocks)") },
 	 // restart, shutdown, and sleep controls	
 	{ MODKEY|ShiftMask,             XK_s,      	   spawn,          		   {.v = suspend } },
 	{ MODKEY|ShiftMask,             XK_r,      	   spawn,          		   {.v = restart } },
 	{ MODKEY|ShiftMask,             XK_a,      	   spawn,          		   {.v = shutdown } },
+
 	
 
 	{ MODKEY,                       XK_b,          togglebar,              {0} },
@@ -258,30 +261,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,          setmfact,               {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_j,          movestack,              {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_k,          movestack,              {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_Return,     zoom,                   {0} },
-//	{ MODKEY|Mod4Mask,              XK_u,          incrgaps,               {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_u,          incrgaps,               {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_i,          incrigaps,              {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_i,          incrigaps,              {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_o,          incrogaps,              {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_o,          incrogaps,              {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_6,          incrihgaps,             {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_6,          incrihgaps,             {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_7,          incrivgaps,             {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_7,          incrivgaps,             {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_8,          incrohgaps,             {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_8,          incrohgaps,             {.i = -1 } },
-//	{ MODKEY|Mod4Mask,              XK_9,          incrovgaps,             {.i = +1 } },
-//	{ MODKEY|Mod4Mask|ShiftMask,    XK_9,          incrovgaps,             {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_0,          togglegaps,             {0} },
 	{ MODKEY|Mod4Mask|ShiftMask,    XK_0,          defaultgaps,            {0} },
-//	{ MODKEY,                       XK_Tab,        view,                   {0} },
 	{ MODKEY,             		      XK_w,          killclient,             {0} },
 	{ MODKEY|ShiftMask,             XK_q,          quit,                   {0} },
-	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[0]} },
-//	{ MODKEY|ShiftMask,             XK_f,          setlayout,              {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,          setlayout,              {.v = &layouts[2]} },
-//	{ MODKEY,                       XK_g,          setlayout,              {.v = &layouts[3]} },
 	{ MODKEY,                       XK_space,      setlayout,              {0} },
 	{ MODKEY|ShiftMask,             XK_space,      togglefloating,         {0} },
 	{ MODKEY,                       XK_u,     		 togglescratch,          {.ui = 0 } },
