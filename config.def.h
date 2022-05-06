@@ -266,6 +266,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,          quit,                   {0} },
 	{ MODKEY,                       XK_space,      setlayout,              {0} },
 	{ MODKEY|ShiftMask,             XK_space,      togglefloating,         {0} },
+    { MODKEY,                       XK_m,          setlayout,              {.v = &layouts[2]} },
 	{ MODKEY,                       XK_u,     		 togglescratch,          {.ui = 0 } },
 	{ MODKEY|ControlMask,           XK_u,      		 setscratch,             {.ui = 0 } },
 	{ MODKEY|ShiftMask,             XK_u,      		 removescratch,          {.ui = 0 } },
@@ -277,6 +278,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_period,     tagmon,                 {.i = +1 } },
 	{ MODKEY,		       							XK_Tab,        cyclelayout,            {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_Tab,        cyclelayout,            {.i = +1 } },
+    { MODKEY,                       XK_t,          setlayout,              {.v = &layouts[0]} },
 	TAGKEYS(                        XK_1,                                  0)
 	TAGKEYS(                        XK_2,                                  1)
 	TAGKEYS(                        XK_3,                                  2)
