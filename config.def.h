@@ -141,7 +141,6 @@ static const Rule rules[] = {
 	/* class     instance     title  wintype   tags mask   isfloating    noswallow     isterminal  monitor */
 	{ "Alacritty", NULL,       NULL, NULL,          0,           0,        1,          1,         -1 },
 	{ "Tk", 		NULL, 	   NULL, NULL,	 		0, 			1, 			0, 		   0, 		  -1},
-	{ "Anki",		NULL,				NULL,			NULL,				0,					1,		0,		0, -1 },
 };
 
 
